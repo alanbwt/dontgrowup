@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Don't Grow Up</title>
+  <meta name="description" content="Don't Grow Up, It's a ___. What's your word?">
+  <meta property="og:title" content="Don't Grow Up, It's a ___">
+  <meta property="og:description" content="Fill in the blank. Your word could end up on a billboard in LA.">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Coming+Soon&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Film grain overlay -->
+  <div class="grain"></div>
+
+  <!-- Twinkling stars -->
+  <div class="stars" id="stars" aria-hidden="true"></div>
+
+  <!-- Hero: The Billboard -->
+  <section class="hero">
+    <div class="billboard">
+      <p class="headline">don't grow up,</p>
+      <div class="blank-line">
+        <span class="headline">it's a&nbsp;</span>
+        <div class="input-wrapper">
+          <input
+            type="text"
+            id="word-input"
+            maxlength="20"
+            placeholder=""
+            autocomplete="off"
+            spellcheck="false"
+          >
+          <div class="input-underline"></div>
+        </div>
+        <span class="headline period">.</span>
+      </div>
+      <button id="submit-btn" class="submit-btn" disabled>put it on a billboard</button>
+    </div>
+    <p class="counter"><span id="count">12,847</span> words submitted</p>
+  </section>
+
+  <!-- After submission: Billboard reveal -->
+  <section class="reveal hidden" id="reveal">
+    <div class="billboard-mockup">
+      <div class="mockup-inner">
+        <p class="mockup-headline">don't grow up,</p>
+        <p class="mockup-word">it's a <span id="reveal-word"></span>.</p>
+        <p class="mockup-attribution">— <span id="reveal-city">Los Angeles</span></p>
+      </div>
+    </div>
+    <p class="reveal-text">your word is live in LA</p>
+    <div class="reveal-actions">
+      <button class="btn-primary" id="share-btn">share your billboard</button>
+      <button class="btn-secondary" id="another-btn">submit another word</button>
+    </div>
+  </section>
+
+  <!-- Ticker -->
+  <div class="ticker-container">
+    <div class="ticker" id="ticker">
+      <div class="ticker-track">
+        <span class="ticker-item">"don't grow up, it's a <em>scam</em>" — jessica, silver lake</span>
+        <span class="ticker-item">"don't grow up, it's a <em>lie</em>" — marcus, venice</span>
+        <span class="ticker-item">"don't grow up, it's a <em>joke</em>" — tyler, dtla</span>
+        <span class="ticker-item">"don't grow up, it's a <em>myth</em>" — sarah, echo park</span>
+        <span class="ticker-item">"don't grow up, it's a <em>dream</em>" — alex, santa monica</span>
+        <span class="ticker-item">"don't grow up, it's a <em>vibe</em>" — priya, koreatown</span>
+        <span class="ticker-item">"don't grow up, it's a <em>choice</em>" — daniel, pasadena</span>
+        <span class="ticker-item">"don't grow up, it's a <em>scam</em>" — jessica, silver lake</span>
+        <span class="ticker-item">"don't grow up, it's a <em>lie</em>" — marcus, venice</span>
+        <span class="ticker-item">"don't grow up, it's a <em>joke</em>" — tyler, dtla</span>
+        <span class="ticker-item">"don't grow up, it's a <em>myth</em>" — sarah, echo park</span>
+        <span class="ticker-item">"don't grow up, it's a <em>dream</em>" — alex, santa monica</span>
+        <span class="ticker-item">"don't grow up, it's a <em>vibe</em>" — priya, koreatown</span>
+        <span class="ticker-item">"don't grow up, it's a <em>choice</em>" — daniel, pasadena</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview + Signup section -->
+  <section class="signup">
+    <!-- Song preview teaser -->
+    <div class="preview-section">
+      <div class="preview-custom" id="preview-custom">
+        <button class="preview-btn" id="preview-btn">
+          <span class="preview-icon">&#9654;</span>
+          <span class="preview-label">hear a preview</span>
+        </button>
+        <div class="preview-player hidden" id="preview-player">
+          <div class="waveform">
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+          </div>
+          <div class="preview-progress">
+            <div class="preview-progress-bar" id="preview-progress-bar"></div>
+          </div>
+          <a href="https://laylo.com/anakahan/presavesongs" target="_blank" rel="noopener" class="preview-fade-text">pre-save to hear the rest</a>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="signup-heading">the answer drops this summer.</h2>
+    <a href="https://laylo.com/anakahan/presavesongs" target="_blank" rel="noopener" class="signup-sub-link">be the first to hear</a>
+    <a href="https://laylo.com/anakahan/presavesongs" target="_blank" rel="noopener" class="btn-primary signup-btn">pre-save + get notified</a>
+    <div class="social-links">
+      <a href="https://www.instagram.com/analilykahan/" target="_blank" rel="noopener" class="social-link">instagram</a>
+      <span class="social-dot"></span>
+      <a href="https://www.tiktok.com/@anakahaan" target="_blank" rel="noopener" class="social-link">tiktok</a>
+      <span class="social-dot"></span>
+      <a href="https://www.youtube.com/user/AnaKahan" target="_blank" rel="noopener" class="social-link">youtube</a>
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
