@@ -115,14 +115,12 @@ async function submitToAPI() {
     const data = await res.json();
 
     if (!res.ok) {
-      if (data.error === 'profanity') {
-        submitBtn.textContent = "let's keep it clean";
-        setTimeout(() => {
-          submitBtn.textContent = 'submit';
-          submitBtn.disabled = false;
-        }, 2000);
-        return;
-      }
+      submitBtn.textContent = data.error || 'try again';
+      setTimeout(() => {
+        submitBtn.textContent = 'submit';
+        submitBtn.disabled = false;
+      }, 2000);
+      return;
       throw new Error(data.error);
     }
 

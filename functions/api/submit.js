@@ -1,22 +1,3 @@
-// Profanity word list
-const PROFANITY = new Set([
-  'fuck','shit','ass','bitch','damn','dick','cock','pussy','cunt',
-  'bastard','slut','whore','nigger','nigga','fag','faggot','retard',
-  'twat','wanker','bollocks','piss','tits','asshole','motherfucker',
-  'fucker','dickhead','shithead','dumbass','jackass','bullshit',
-  'goddamn','hell','crap','penis','vagina','boob','dildo','anal'
-]);
-
-function isProfane(word) {
-  const lower = word.toLowerCase().trim();
-  if (PROFANITY.has(lower)) return true;
-  // Check if the word contains a profane word
-  for (const p of PROFANITY) {
-    if (lower.includes(p)) return true;
-  }
-  return false;
-}
-
 export async function onRequestPost(context) {
   const { request, env } = context;
 
@@ -41,8 +22,9 @@ export async function onRequestPost(context) {
       return Response.json({ error: 'Invalid word' }, { status: 400 });
     }
 
-    if (isProfane(cleaned)) {
-      return Response.json({ error: 'profanity', message: "let's keep it clean" }, { status: 400 });
+    // Enforce single word only (no spaces)
+    if (cleaned.includes(' ')) {
+      return Response.json({ error: 'One word only' }, { status: 400 });
     }
 
     const nameClean = name.trim().toLowerCase().replace(/[^a-z\s'-]/g, '').substring(0, 30);
