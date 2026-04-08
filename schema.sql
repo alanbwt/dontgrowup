@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS submissions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  word TEXT NOT NULL,
+  city TEXT DEFAULT 'los angeles',
+  created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS subscribers (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  phone TEXT,
+  email TEXT,
+  created_at TEXT NOT NULL
+);

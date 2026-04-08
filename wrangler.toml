@@ -1,0 +1,8 @@
+name = "dontgrowup"
+compatibility_date = "2024-09-23"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "DB"
+database_name = "dontgrowup-db"
+database_id = "625f13be-24d4-47e8-a004-812f05d68c4e"
