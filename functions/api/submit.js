@@ -21,7 +21,11 @@ export async function onRequestPost(context) {
   const { request, env } = context;
 
   try {
-    const { word, name, city, phone } = await request.json();
+    const { word, name, phone } = await request.json();
+
+    // Auto-detect city from Cloudflare request headers
+    const cfCity = request.cf?.city || '';
+    const cfRegion = request.cf?.region || '';
 
     if (!word || typeof word !== 'string') {
       return Response.json({ error: 'Word is required' }, { status: 400 });
@@ -42,7 +46,7 @@ export async function onRequestPost(context) {
     }
 
     const nameClean = name.trim().toLowerCase().replace(/[^a-z\s'-]/g, '').substring(0, 30);
-    const cityClean = (city || 'los angeles').trim().toLowerCase().substring(0, 50);
+    const cityClean = (cfCity || 'los angeles').toLowerCase().substring(0, 50);
     const phoneClean = phone.trim().replace(/[^0-9+\-() ]/g, '').substring(0, 20);
 
     // Store in D1
@@ -54,7 +58,7 @@ export async function onRequestPost(context) {
     const { results } = await env.DB.prepare('SELECT COUNT(*) as count FROM submissions').all();
     const count = results[0].count;
 
-    return Response.json({ success: true, word: cleaned, count }, {
+    return Response.json({ success: true, word: cleaned, city: cityClean, count }, {
       headers: { 'Access-Control-Allow-Origin': '*' }
     });
   } catch (err) {

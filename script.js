@@ -59,7 +59,6 @@ resizeInput();
 
 const detailFields = document.getElementById('detail-fields');
 const nameInput = document.getElementById('name-input');
-const cityInput = document.getElementById('city-input');
 const phoneInput = document.getElementById('phone-input');
 const revealCity = document.getElementById('reveal-city');
 let step = 1;
@@ -100,7 +99,6 @@ function handleSubmit() {
 async function submitToAPI() {
   const word = wordInput.value.trim().toLowerCase();
   const name = nameInput.value.trim().toLowerCase();
-  const city = cityInput.value.trim().toLowerCase() || 'los angeles';
   const phone = phoneInput.value.trim();
   if (!word || !name || !phone) return;
 
@@ -111,7 +109,7 @@ async function submitToAPI() {
     const res = await fetch('/api/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ word, name, city, phone })
+      body: JSON.stringify({ word, name, phone })
     });
 
     const data = await res.json();
@@ -132,11 +130,11 @@ async function submitToAPI() {
       countEl.textContent = data.count.toLocaleString();
     }
 
-    showReveal(word, name, city);
+    showReveal(word, name, data.city || 'los angeles');
     loadFeed();
 
   } catch (err) {
-    showReveal(word, name, city);
+    showReveal(word, name, 'los angeles');
   }
 }
 
@@ -157,10 +155,6 @@ wordInput.addEventListener('keydown', (e) => {
 });
 
 nameInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') cityInput.focus();
-});
-
-cityInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') phoneInput.focus();
 });
 
@@ -174,7 +168,6 @@ anotherBtn.addEventListener('click', () => {
   heroSection.style.display = 'flex';
   wordInput.value = '';
   nameInput.value = '';
-  cityInput.value = '';
   phoneInput.value = '';
   detailFields.classList.add('hidden');
   submitBtn.classList.remove('visible');
