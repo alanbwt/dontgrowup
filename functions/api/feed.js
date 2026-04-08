@@ -4,7 +4,7 @@ export async function onRequestGet(context) {
   try {
     // Get latest 20 submissions for the ticker
     const { results: submissions } = await env.DB.prepare(
-      'SELECT word, city, created_at FROM submissions ORDER BY created_at DESC LIMIT 20'
+      'SELECT word, name, city, created_at FROM submissions ORDER BY created_at DESC LIMIT 20'
     ).all();
 
     // Get total count

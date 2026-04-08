@@ -107,8 +107,8 @@ body {
   background: transparent;
   border: none;
   outline: none;
-  width: 8ch;
-  min-width: 5ch;
+  width: 20px;
+  min-width: 20px;
   caret-color: var(--yellow);
   padding: 0;
   line-height: 1.3;
@@ -127,6 +127,53 @@ body {
 
 #word-input:focus ~ .input-underline {
   box-shadow: 0 2px 16px rgba(240, 239, 160, 0.3);
+}
+
+.detail-fields {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  justify-content: center;
+  animation: fadeInUp 0.4s ease both;
+}
+
+.detail-fields.hidden {
+  display: none;
+}
+
+.detail-input {
+  font-family: var(--font-secondary);
+  font-size: 0.95rem;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(42, 58, 74, 0.12);
+  border-radius: 100px;
+  padding: 0.7rem 1.2rem;
+  outline: none;
+  transition: border-color 0.3s ease, background 0.3s ease;
+  text-transform: lowercase;
+  backdrop-filter: blur(4px);
+  width: 160px;
+  text-align: center;
+}
+
+.detail-input::placeholder {
+  color: var(--muted);
+}
+
+.detail-input:focus {
+  border-color: var(--yellow-dark);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+@media (max-width: 600px) {
+  .detail-fields {
+    flex-direction: column;
+    align-items: center;
+  }
+  .detail-input {
+    width: 220px;
+  }
 }
 
 .submit-btn {

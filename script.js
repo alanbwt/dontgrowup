@@ -35,10 +35,10 @@ function resizeInput() {
   const textWidth = measurer.getBoundingClientRect().width;
   document.body.removeChild(measurer);
 
-  // Minimum width for the underline, max so it doesn't overflow
-  const minWidth = 80;
+  // Start at ~1 character wide, grow as they type
+  const minWidth = 20;
   const maxWidth = window.innerWidth < 600 ? window.innerWidth - 60 : 500;
-  wordInput.style.width = Math.min(Math.max(textWidth + 20, minWidth), maxWidth) + 'px';
+  wordInput.style.width = Math.min(Math.max(textWidth + 12, minWidth), maxWidth) + 'px';
 }
 
 wordInput.addEventListener('input', () => {
@@ -52,11 +52,38 @@ wordInput.addEventListener('input', () => {
 resizeInput();
 
 // ============================================
-// Submission: POST to API
+// Submission: two-step flow
+// Step 1: type word → show name/city fields
+// Step 2: submit with name/city → POST to API
 // ============================================
 
-async function submitWord() {
+const detailFields = document.getElementById('detail-fields');
+const nameInput = document.getElementById('name-input');
+const cityInput = document.getElementById('city-input');
+const revealCity = document.getElementById('reveal-city');
+let step = 1;
+
+function handleSubmit() {
+  if (step === 1) {
+    const word = wordInput.value.trim();
+    if (!word) return;
+
+    // Show name/city fields
+    detailFields.classList.remove('hidden');
+    submitBtn.textContent = 'submit';
+    step = 2;
+    nameInput.focus();
+    return;
+  }
+
+  // Step 2: submit everything
+  submitToAPI();
+}
+
+async function submitToAPI() {
   const word = wordInput.value.trim().toLowerCase();
+  const name = nameInput.value.trim().toLowerCase() || 'anonymous';
+  const city = cityInput.value.trim().toLowerCase() || 'los angeles';
   if (!word) return;
 
   submitBtn.disabled = true;
@@ -66,7 +93,7 @@ async function submitWord() {
     const res = await fetch('/api/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ word, city: 'los angeles' })
+      body: JSON.stringify({ word, name, city })
     });
 
     const data = await res.json();
@@ -75,7 +102,7 @@ async function submitWord() {
       if (data.error === 'profanity') {
         submitBtn.textContent = "let's keep it clean";
         setTimeout(() => {
-          submitBtn.textContent = 'put it on a billboard';
+          submitBtn.textContent = 'submit';
           submitBtn.disabled = false;
         }, 2000);
         return;
@@ -83,35 +110,40 @@ async function submitWord() {
       throw new Error(data.error);
     }
 
-    // Update counter
     if (data.count !== undefined) {
       countEl.textContent = data.count.toLocaleString();
     }
 
-    // Show reveal
-    revealWord.textContent = word;
-    heroSection.style.display = 'none';
-    revealSection.classList.remove('hidden');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    // Refresh ticker
+    showReveal(word, name, city);
     loadFeed();
 
   } catch (err) {
-    // If API is unavailable (local dev), still show the reveal
-    revealWord.textContent = word;
-    heroSection.style.display = 'none';
-    revealSection.classList.remove('hidden');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showReveal(word, name, city);
   }
 }
 
-submitBtn.addEventListener('click', submitWord);
+function showReveal(word, name, city) {
+  revealWord.textContent = word;
+  revealCity.textContent = name + ', ' + city;
+  heroSection.style.display = 'none';
+  revealSection.classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+submitBtn.addEventListener('click', handleSubmit);
 
 wordInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && wordInput.value.trim()) {
-    submitWord();
+    handleSubmit();
   }
+});
+
+nameInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') cityInput.focus();
+});
+
+cityInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') handleSubmit();
 });
 
 // Submit another word
@@ -119,9 +151,13 @@ anotherBtn.addEventListener('click', () => {
   revealSection.classList.add('hidden');
   heroSection.style.display = 'flex';
   wordInput.value = '';
+  nameInput.value = '';
+  cityInput.value = '';
+  detailFields.classList.add('hidden');
   submitBtn.classList.remove('visible');
   submitBtn.disabled = true;
   submitBtn.textContent = 'put it on a billboard';
+  step = 1;
   resizeInput();
   wordInput.focus();
 });
@@ -241,9 +277,10 @@ async function loadFeed() {
 
     // Update ticker with real submissions
     if (data.submissions && data.submissions.length > 0) {
-      const items = data.submissions.map(s =>
-        `<span class="ticker-item">"don't grow up, it's a <em>${escapeHtml(s.word)}</em>" — ${escapeHtml(s.city)}</span>`
-      );
+      const items = data.submissions.map(s => {
+        const attribution = [s.name, s.city].filter(Boolean).join(', ');
+        return `<span class="ticker-item">"don't grow up, it's a <em>${escapeHtml(s.word)}</em>" — ${escapeHtml(attribution)}</span>`;
+      });
       // Duplicate for seamless loop
       tickerTrack.innerHTML = items.join('') + items.join('');
     } else {
