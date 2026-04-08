@@ -142,6 +142,33 @@ previewBtn.addEventListener('click', () => {
   }
 });
 
+// Signup form
+const signupForm = document.getElementById('signup-form');
+const signupSuccess = document.getElementById('signup-success');
+
+signupForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const phone = document.getElementById('phone-input').value.trim();
+  const email = document.getElementById('email-input').value.trim();
+
+  if (!phone && !email) return;
+
+  // In production: POST to Cloudflare Worker → D1
+  try {
+    await fetch('/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, email })
+    }).catch(() => {}); // Silently fail for now (no backend yet)
+  } catch (err) {
+    // Backend not wired up yet — still show success
+  }
+
+  // Show success + Spotify pre-save prompt
+  signupForm.classList.add('hidden');
+  signupSuccess.classList.remove('hidden');
+});
+
 // Counter animation
 function animateCounter() {
   const countEl = document.getElementById('count');
