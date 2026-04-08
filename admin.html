@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Don't Grow Up</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #1a1a1a;
+      color: #e0e0e0;
+      padding: 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .subtitle { color: #888; font-size: 0.9rem; margin-bottom: 2rem; }
+    .stats {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    .stat {
+      background: #252525;
+      border-radius: 12px;
+      padding: 1.5rem;
+      flex: 1;
+    }
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 600;
+      color: #F5F5C2;
+    }
+    .stat-label {
+      font-size: 0.85rem;
+      color: #888;
+      margin-top: 0.25rem;
+    }
+    .actions {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary { background: #F5F5C2; color: #1a1a1a; }
+    .btn-secondary { background: #333; color: #e0e0e0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    th {
+      text-align: left;
+      padding: 0.75rem;
+      border-bottom: 1px solid #333;
+      color: #888;
+      font-weight: 500;
+    }
+    td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #252525;
+    }
+    .word-cell { color: #F5F5C2; font-weight: 500; }
+    .phone-cell { font-family: monospace; font-size: 0.8rem; }
+    .time-cell { color: #666; font-size: 0.8rem; }
+    .empty { color: #555; text-align: center; padding: 3rem; }
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      gap: 1rem;
+    }
+    .login-input {
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      border: 1px solid #333;
+      background: #252525;
+      color: #e0e0e0;
+      width: 280px;
+      text-align: center;
+      outline: none;
+    }
+    .login-input:focus { border-color: #F5F5C2; }
+  </style>
+</head>
+<body>
+  <div id="login" class="login-form">
+    <h1>admin</h1>
+    <input type="password" id="password" class="login-input" placeholder="password" autofocus>
+    <button class="btn btn-primary" id="login-btn">enter</button>
+  </div>
+
+  <div id="dashboard" style="display:none">
+    <h1>don't grow up — admin</h1>
+    <p class="subtitle">submission data + export for laylo</p>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-number" id="total">—</div>
+        <div class="stat-label">total submissions</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number" id="phones">—</div>
+        <div class="stat-label">unique phone numbers</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="export-phones">download phone list (for laylo)</button>
+      <button class="btn btn-secondary" id="export-all">download all data (csv)</button>
+    </div>
+
+    <h2 style="font-size:1rem; margin-bottom:1rem;">recent submissions</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>word</th>
+          <th>name</th>
+          <th>city</th>
+          <th>phone</th>
+          <th>time</th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+        <tr><td colspan="5" class="empty">loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    let authHeader = '';
+
+    document.getElementById('login-btn').addEventListener('click', login);
+    document.getElementById('password').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') login();
+    });
+
+    async function login() {
+      const pw = document.getElementById('password').value;
+      authHeader = 'Basic ' + btoa(':' + pw);
+
+      try {
+        const res = await fetch('/api/admin', {
+          headers: { 'Authorization': authHeader }
+        });
+
+        if (res.status === 401) {
+          document.getElementById('password').style.borderColor = '#e07070';
+          return;
+        }
+
+        const data = await res.json();
+        document.getElementById('login').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        renderDashboard(data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function renderDashboard(data) {
+      document.getElementById('total').textContent = data.total_submissions.toLocaleString();
+      document.getElementById('phones').textContent = data.unique_phones.toLocaleString();
+
+      const tbody = document.getElementById('table-body');
+      if (data.recent_submissions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="empty">no submissions yet</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = data.recent_submissions.map(s => `
+        <tr>
+          <td class="word-cell">${esc(s.word)}</td>
+          <td>${esc(s.name)}</td>
+          <td>${esc(s.city)}</td>
+          <td class="phone-cell">${esc(s.phone)}</td>
+          <td class="time-cell">${new Date(s.created_at).toLocaleString()}</td>
+        </tr>
+      `).join('');
+    }
+
+    function esc(str) {
+      const d = document.createElement('div');
+      d.textContent = str || '';
+      return d.innerHTML;
+    }
+
+    document.getElementById('export-phones').addEventListener('click', () => {
+      window.location.href = '/api/admin?format=phones&auth=' + encodeURIComponent(authHeader);
+      // Use fetch with auth header for download
+      downloadExport('phones');
+    });
+
+    document.getElementById('export-all').addEventListener('click', () => {
+      downloadExport('csv');
+    });
+
+    async function downloadExport(format) {
+      const res = await fetch('/api/admin?format=' + format, {
+        headers: { 'Authorization': authHeader }
+      });
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = res.headers.get('Content-Disposition')?.split('filename=')[1]?.replace(/"/g, '') || `export-${format}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
