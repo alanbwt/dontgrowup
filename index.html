@@ -40,8 +40,12 @@
         <span class="headline period">.</span>
       </div>
       <div class="detail-fields hidden" id="detail-fields">
-        <input type="text" id="name-input" placeholder="your first name" class="detail-input" maxlength="30" autocomplete="off">
-        <input type="text" id="city-input" placeholder="your city" class="detail-input" maxlength="50" autocomplete="off">
+        <div class="detail-row">
+          <input type="text" id="name-input" placeholder="your first name" class="detail-input" maxlength="30" autocomplete="off" required>
+          <input type="text" id="city-input" placeholder="your city" class="detail-input" maxlength="50" autocomplete="off">
+        </div>
+        <input type="tel" id="phone-input" placeholder="your phone number" class="detail-input detail-input-wide" maxlength="20" autocomplete="off" required>
+        <p class="detail-hint">to verify your entry</p>
       </div>
       <button id="submit-btn" class="submit-btn" disabled>put it on a billboard</button>
     </div>
@@ -59,6 +63,7 @@
     </div>
     <p class="reveal-text">your word is live in LA</p>
     <div class="reveal-actions">
+      <a href="https://laylo.com/anakahan/presavesongs" target="_blank" rel="noopener" class="btn-primary">pre-save on spotify</a>
       <button class="btn-primary" id="share-btn">share your billboard</button>
       <button class="btn-secondary" id="another-btn">submit another word</button>
     </div>
@@ -73,9 +78,8 @@
     </div>
   </div>
 
-  <!-- Preview + Signup section -->
-  <section class="signup">
-    <!-- Song preview teaser -->
+  <!-- Bottom section: preview + links -->
+  <section class="bottom-section">
     <div class="preview-section">
       <div class="preview-custom" id="preview-custom">
         <button class="preview-btn" id="preview-btn">
@@ -106,15 +110,8 @@
     </div>
 
     <h2 class="signup-heading">the answer drops this summer.</h2>
-    <form class="signup-form" id="signup-form">
-      <input type="tel" id="phone-input" placeholder="your phone number" class="signup-input">
-      <input type="email" id="email-input" placeholder="your email" class="signup-input">
-      <button type="submit" class="btn-primary signup-btn">notify me</button>
-    </form>
-    <div class="signup-success hidden" id="signup-success">
-      <p class="success-text">you're in.</p>
-      <a href="https://laylo.com/anakahan/presavesongs" target="_blank" rel="noopener" class="btn-primary signup-btn">pre-save on spotify</a>
-    </div>
+    <a href="https://laylo.com/anakahan/presavesongs" target="_blank" rel="noopener" class="btn-primary bottom-cta">pre-save on spotify</a>
+
     <div class="social-links">
       <a href="https://www.instagram.com/analilykahan/" target="_blank" rel="noopener" class="social-link">instagram</a>
       <span class="social-dot"></span>

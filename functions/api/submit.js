@@ -21,10 +21,14 @@ export async function onRequestPost(context) {
   const { request, env } = context;
 
   try {
-    const { word, name, city } = await request.json();
+    const { word, name, city, phone } = await request.json();
 
     if (!word || typeof word !== 'string') {
       return Response.json({ error: 'Word is required' }, { status: 400 });
+    }
+
+    if (!name || !phone) {
+      return Response.json({ error: 'Name and phone are required' }, { status: 400 });
     }
 
     const cleaned = word.trim().toLowerCase().replace(/[^a-z0-9\s'-]/g, '');
@@ -37,13 +41,14 @@ export async function onRequestPost(context) {
       return Response.json({ error: 'profanity', message: "let's keep it clean" }, { status: 400 });
     }
 
-    const nameClean = (name || 'anonymous').trim().toLowerCase().replace(/[^a-z\s'-]/g, '').substring(0, 30);
+    const nameClean = name.trim().toLowerCase().replace(/[^a-z\s'-]/g, '').substring(0, 30);
     const cityClean = (city || 'los angeles').trim().toLowerCase().substring(0, 50);
+    const phoneClean = phone.trim().replace(/[^0-9+\-() ]/g, '').substring(0, 20);
 
     // Store in D1
     await env.DB.prepare(
-      'INSERT INTO submissions (word, name, city, created_at) VALUES (?, ?, ?, ?)'
-    ).bind(cleaned, nameClean, cityClean, new Date().toISOString()).run();
+      'INSERT INTO submissions (word, name, city, phone, created_at) VALUES (?, ?, ?, ?, ?)'
+    ).bind(cleaned, nameClean, cityClean, phoneClean, new Date().toISOString()).run();
 
     // Get updated count
     const { results } = await env.DB.prepare('SELECT COUNT(*) as count FROM submissions').all();

@@ -60,6 +60,7 @@ resizeInput();
 const detailFields = document.getElementById('detail-fields');
 const nameInput = document.getElementById('name-input');
 const cityInput = document.getElementById('city-input');
+const phoneInput = document.getElementById('phone-input');
 const revealCity = document.getElementById('reveal-city');
 let step = 1;
 
@@ -68,7 +69,7 @@ function handleSubmit() {
     const word = wordInput.value.trim();
     if (!word) return;
 
-    // Show name/city fields
+    // Show detail fields (name, city, phone)
     detailFields.classList.remove('hidden');
     submitBtn.textContent = 'submit';
     step = 2;
@@ -76,15 +77,32 @@ function handleSubmit() {
     return;
   }
 
-  // Step 2: submit everything
+  // Step 2: validate and submit
+  const name = nameInput.value.trim();
+  const phone = phoneInput.value.trim();
+
+  if (!name) {
+    nameInput.focus();
+    nameInput.style.borderColor = '#e07070';
+    setTimeout(() => { nameInput.style.borderColor = ''; }, 2000);
+    return;
+  }
+  if (!phone || phone.length < 7) {
+    phoneInput.focus();
+    phoneInput.style.borderColor = '#e07070';
+    setTimeout(() => { phoneInput.style.borderColor = ''; }, 2000);
+    return;
+  }
+
   submitToAPI();
 }
 
 async function submitToAPI() {
   const word = wordInput.value.trim().toLowerCase();
-  const name = nameInput.value.trim().toLowerCase() || 'anonymous';
+  const name = nameInput.value.trim().toLowerCase();
   const city = cityInput.value.trim().toLowerCase() || 'los angeles';
-  if (!word) return;
+  const phone = phoneInput.value.trim();
+  if (!word || !name || !phone) return;
 
   submitBtn.disabled = true;
   submitBtn.textContent = 'submitting...';
@@ -93,7 +111,7 @@ async function submitToAPI() {
     const res = await fetch('/api/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ word, name, city })
+      body: JSON.stringify({ word, name, city, phone })
     });
 
     const data = await res.json();
@@ -143,6 +161,10 @@ nameInput.addEventListener('keydown', (e) => {
 });
 
 cityInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') phoneInput.focus();
+});
+
+phoneInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') handleSubmit();
 });
 
@@ -153,6 +175,7 @@ anotherBtn.addEventListener('click', () => {
   wordInput.value = '';
   nameInput.value = '';
   cityInput.value = '';
+  phoneInput.value = '';
   detailFields.classList.add('hidden');
   submitBtn.classList.remove('visible');
   submitBtn.disabled = true;
@@ -237,31 +260,6 @@ function stopPreview() {
   previewBtn.querySelector('.preview-icon').textContent = '\u25B6';
   previewBtn.querySelector('.preview-label').textContent = 'play again';
 }
-
-// ============================================
-// Signup form
-// ============================================
-
-const signupForm = document.getElementById('signup-form');
-const signupSuccess = document.getElementById('signup-success');
-
-signupForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const phone = document.getElementById('phone-input').value.trim();
-  const email = document.getElementById('email-input').value.trim();
-  if (!phone && !email) return;
-
-  try {
-    await fetch('/api/subscribe', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone, email })
-    });
-  } catch (err) {}
-
-  signupForm.classList.add('hidden');
-  signupSuccess.classList.remove('hidden');
-});
 
 // ============================================
 // Live feed: load real submissions
