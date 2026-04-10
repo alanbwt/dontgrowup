@@ -293,7 +293,15 @@ body {
   align-items: center;
   gap: 0.75rem;
   margin-top: 1.5rem;
+  width: 100%;
+  max-width: 320px;
   animation: fadeInUp 0.6s ease 0.5s both;
+}
+
+.reveal-actions a,
+.reveal-actions button {
+  width: 100%;
+  text-align: center;
 }
 
 .reveal-cta-main {
@@ -665,13 +673,14 @@ body {
   }
 
   .reveal-actions {
-    flex-direction: column;
     width: 100%;
     max-width: 300px;
   }
 
-  .reveal-actions button {
+  .reveal-actions button,
+  .reveal-actions a {
     width: 100%;
+    text-align: center;
   }
 
   .streaming-links {

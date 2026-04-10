@@ -211,51 +211,55 @@ shareBtn.addEventListener('click', async () => {
   shareBtn.disabled = false;
 });
 
-function generateBillboardImage(word, attribution) {
+async function generateBillboardImage(word, attribution) {
+  // Ensure fonts are loaded
+  await document.fonts.ready;
+
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+
+  // Instagram story size (1080x1920)
+  canvas.width = 1080;
+  canvas.height = 1920;
+
+  // Background
+  ctx.fillStyle = '#A8C4D4';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.textAlign = 'center';
+
+  // "don't grow up,"
+  ctx.font = 'bold 80px "Coming Soon", cursive';
+  ctx.fillStyle = '#F5F5C2';
+  ctx.fillText("don't grow up,", canvas.width / 2, 780);
+
+  // "it's a [word]."
+  const fullLine = "it's a " + word + ".";
+  ctx.fillText(fullLine, canvas.width / 2, 890);
+
+  // Underline under the word only
+  const fullWidth = ctx.measureText(fullLine).width;
+  const prefixWidth = ctx.measureText("it's a ").width;
+  const wordWidth = ctx.measureText(word).width;
+  const lineStartX = (canvas.width / 2) - (fullWidth / 2) + prefixWidth;
+  ctx.strokeStyle = '#F5F5C2';
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(lineStartX, 910);
+  ctx.lineTo(lineStartX + wordWidth, 910);
+  ctx.stroke();
+
+  // Attribution
+  ctx.font = '36px Inter, sans-serif';
+  ctx.fillStyle = '#4A6275';
+  ctx.fillText('\u2014 ' + attribution, canvas.width / 2, 990);
+
+  // URL at bottom
+  ctx.font = '30px Inter, sans-serif';
+  ctx.fillStyle = '#7A909E';
+  ctx.fillText('dontgrowup.la', canvas.width / 2, 1780);
+
   return new Promise((resolve) => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-
-    // Instagram story size (1080x1920)
-    canvas.width = 1080;
-    canvas.height = 1920;
-
-    // Background
-    ctx.fillStyle = '#A8C4D4';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Draw text
-    ctx.textAlign = 'center';
-
-    // "don't grow up,"
-    ctx.font = 'bold 72px "Coming Soon", cursive';
-    ctx.fillStyle = '#F5F5C2';
-    ctx.fillText("don't grow up,", canvas.width / 2, 720);
-
-    // "it's a [word]."
-    ctx.fillText("it's a " + word + ".", canvas.width / 2, 820);
-
-    // Underline under the word
-    const wordWidth = ctx.measureText(word).width;
-    const itsAWidth = ctx.measureText("it's a ").width;
-    const lineStartX = (canvas.width / 2) - ctx.measureText("it's a " + word + ".").width / 2 + itsAWidth;
-    ctx.strokeStyle = '#F5F5C2';
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.moveTo(lineStartX, 835);
-    ctx.lineTo(lineStartX + wordWidth, 835);
-    ctx.stroke();
-
-    // Attribution
-    ctx.font = '36px "Inter", sans-serif';
-    ctx.fillStyle = 'rgba(42, 58, 74, 0.6)';
-    ctx.fillText('— ' + attribution, canvas.width / 2, 920);
-
-    // URL at bottom
-    ctx.font = '32px "Inter", sans-serif';
-    ctx.fillStyle = 'rgba(42, 58, 74, 0.4)';
-    ctx.fillText('dontgrowup.la', canvas.width / 2, 1750);
-
     canvas.toBlob((blob) => resolve(blob), 'image/png');
   });
 }
