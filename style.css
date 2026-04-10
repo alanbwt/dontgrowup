@@ -142,12 +142,6 @@ body {
   display: none;
 }
 
-.detail-row {
-  display: flex;
-  gap: 0.75rem;
-  justify-content: center;
-}
-
 .detail-input {
   font-family: var(--font-secondary);
   font-size: 0.95rem;
@@ -160,12 +154,8 @@ body {
   transition: border-color 0.3s ease, background 0.3s ease;
   text-transform: lowercase;
   backdrop-filter: blur(4px);
-  width: 160px;
+  width: 260px;
   text-align: center;
-}
-
-.detail-input-wide {
-  width: 330px;
 }
 
 .detail-input::placeholder {
@@ -175,27 +165,6 @@ body {
 .detail-input:focus {
   border-color: var(--yellow-dark);
   background: rgba(255, 255, 255, 0.5);
-}
-
-.detail-hint {
-  font-family: var(--font-secondary);
-  font-size: 0.75rem;
-  color: var(--muted);
-  text-transform: lowercase;
-  margin-top: -0.25rem;
-}
-
-@media (max-width: 600px) {
-  .detail-row {
-    flex-direction: column;
-    align-items: center;
-  }
-  .detail-input {
-    width: 260px;
-  }
-  .detail-input-wide {
-    width: 260px;
-  }
 }
 
 .submit-btn {
@@ -320,11 +289,16 @@ body {
 
 .reveal-actions {
   display: flex;
-  gap: 1rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
   margin-top: 1.5rem;
-  flex-wrap: wrap;
-  justify-content: center;
   animation: fadeInUp 0.6s ease 0.5s both;
+}
+
+.reveal-cta-main {
+  font-size: 1.05rem;
+  padding: 1rem 3rem;
 }
 
 .btn-primary {
@@ -420,9 +394,16 @@ body {
   margin-bottom: 3rem;
 }
 
+.preview-custom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .preview-btn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.75rem;
   font-family: var(--font-secondary);
   font-size: 0.95rem;

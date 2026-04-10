@@ -176,24 +176,89 @@ anotherBtn.addEventListener('click', () => {
   wordInput.focus();
 });
 
-// Share button
-shareBtn.addEventListener('click', () => {
+// Share button — generates a billboard image
+shareBtn.addEventListener('click', async () => {
   const word = revealWord.textContent;
-  if (navigator.share) {
-    navigator.share({
-      title: "Don't Grow Up, It's a " + word.toUpperCase(),
-      text: "I put my word on a billboard in LA. What's yours?",
-      url: 'https://dontgrowup.la'
-    }).catch(() => {});
-  } else {
-    navigator.clipboard.writeText(
-      "Don't grow up, it's a " + word + " — put YOUR word on a billboard: dontgrowup.la"
-    ).then(() => {
-      shareBtn.textContent = 'copied to clipboard';
-      setTimeout(() => { shareBtn.textContent = 'share your billboard'; }, 2000);
-    });
+  const attribution = revealCity.textContent;
+
+  shareBtn.textContent = 'generating...';
+  shareBtn.disabled = true;
+
+  try {
+    const blob = await generateBillboardImage(word, attribution);
+    const file = new File([blob], 'my-billboard.png', { type: 'image/png' });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        files: [file],
+        title: "Don't Grow Up, It's a " + word,
+        text: "I put my word on a billboard in LA. What's yours? dontgrowup.la"
+      });
+    } else {
+      // Fallback: download the image
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'my-billboard.png';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  } catch (err) {
+    console.error('Share failed:', err);
   }
+
+  shareBtn.textContent = 'share your billboard';
+  shareBtn.disabled = false;
 });
+
+function generateBillboardImage(word, attribution) {
+  return new Promise((resolve) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Instagram story size (1080x1920)
+    canvas.width = 1080;
+    canvas.height = 1920;
+
+    // Background
+    ctx.fillStyle = '#A8C4D4';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw text
+    ctx.textAlign = 'center';
+
+    // "don't grow up,"
+    ctx.font = 'bold 72px "Coming Soon", cursive';
+    ctx.fillStyle = '#F5F5C2';
+    ctx.fillText("don't grow up,", canvas.width / 2, 720);
+
+    // "it's a [word]."
+    ctx.fillText("it's a " + word + ".", canvas.width / 2, 820);
+
+    // Underline under the word
+    const wordWidth = ctx.measureText(word).width;
+    const itsAWidth = ctx.measureText("it's a ").width;
+    const lineStartX = (canvas.width / 2) - ctx.measureText("it's a " + word + ".").width / 2 + itsAWidth;
+    ctx.strokeStyle = '#F5F5C2';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(lineStartX, 835);
+    ctx.lineTo(lineStartX + wordWidth, 835);
+    ctx.stroke();
+
+    // Attribution
+    ctx.font = '36px "Inter", sans-serif';
+    ctx.fillStyle = 'rgba(42, 58, 74, 0.6)';
+    ctx.fillText('— ' + attribution, canvas.width / 2, 920);
+
+    // URL at bottom
+    ctx.font = '32px "Inter", sans-serif';
+    ctx.fillStyle = 'rgba(42, 58, 74, 0.4)';
+    ctx.fillText('dontgrowup.la', canvas.width / 2, 1750);
+
+    canvas.toBlob((blob) => resolve(blob), 'image/png');
+  });
+}
 
 // ============================================
 // Audio Preview
